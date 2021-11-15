@@ -1697,7 +1697,7 @@ div:not(.handcards)>.card>.info>span,
 }
 #window>.dialog.popped {
 	z-index: 5;
-	width: 220px;
+	width: 360px;
 	background: rgba(0,0,0,0.2);
 	box-shadow: rgba(0, 0, 0, 0.3) 0 0 0 1px;
 	border-radius: 6px;
@@ -2681,13 +2681,13 @@ div:not(.handcards)>.card>.info>span,
 .player::after,
 .card::after,
 .button::after {
-	box-shadow: rgba(0, 0, 0, 0.2) 0 0 0 1px,rgba(255, 0, 0, 0.4) 0 0 5px, rgba(255, 0, 0, 0.4) 0 0 12px, rgba(255, 0, 0, 0.8) 0 0 15px;
+	box-shadow: rgba(0, 0, 0, 0.4) 0 0 0 1px,rgba(255, 0, 0, 0.6) 0 0 8px, rgba(255, 0, 0, 0.8) 0 0 15px, rgba(255, 0, 0, 1) 0 0 18px;
 }
 
 .player::before,
 .card::before,
 .button::before {
-	box-shadow: rgba(0, 0, 0, 0.2) 0 0 0 1px, rgba(0, 133, 255, 0.5) 0 0 5px, rgba(0, 133, 255, 0.6) 0 0 12px, rgba(0, 133, 255, 0.8) 0 0 15px;
+	box-shadow: rgba(0, 0, 0, 0.4) 0 0 0 1px, rgba(0, 133, 255, 0.6) 0 0 8px, rgba(0, 133, 255, 0.8) 0 0 15px, rgba(0, 133, 255, 1) 0 0 18px;
 }
 
 
@@ -3515,7 +3515,7 @@ div:not(.handcards)>.card>.info>span,
 	opacity: 1 !important;
 }
 #arena.selecting:not(.video) #me .card:not(.selectable) {
-	opacity: 0.8
+	opacity: 0.4
 }
 .button.character.banned,.button.card.banned {
 	opacity: 0.5
