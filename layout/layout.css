@@ -1295,7 +1295,7 @@ body>.background.land {
 	/*overflow: hidden;*/
 }
 .card>.info {
-	right: 6px;
+	right: 4px;
 	top: 9px;
 	white-space: nowrap;
 }
