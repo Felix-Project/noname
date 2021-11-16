@@ -49100,11 +49100,11 @@
 			}
 			var offset1,offset12=0;
 			if(!lib.config.fold_card){
-				offset1=112;
+				offset1=96;
 				ui.handcards1Container.classList.add('scrollh');
 			}
 			else{
-				offset1=Math.min(112,(ui.handcards1Container.offsetWidth-128)/(hs1.length-1));
+				offset1=Math.min(96,(ui.handcards1Container.offsetWidth-128)/(hs1.length-1));
 				if(hs1.length>1&&offset1<32){
 					offset1=32;
 					ui.handcards1Container.classList.add('scrollh');
@@ -49144,11 +49144,11 @@
 
 			var offset2,offset22=0;
 			if(!lib.config.fold_card){
-				offset2=112;
+				offset2=96;
 				ui.handcards2Container.classList.add('scrollh');
 			}
 			else{
-				offset2=Math.min(112,(ui.handcards2Container.offsetWidth-128)/(hs2.length-1));
+				offset2=Math.min(96,(ui.handcards2Container.offsetWidth-128)/(hs2.length-1));
 				if(hs2.length>1&&offset2<32){
 					offset2=32;
 					ui.handcards2Container.classList.add('scrollh');
@@ -49218,7 +49218,7 @@
 				// node.dataset.fold=2;
 				node.classList.add('fold2');
 			}
-			else if(num*112+6>=width){
+			else if(num*96+6>=width){
 				// node.dataset.fold=1;
 				node.classList.add('fold1');
 			}
