@@ -237,11 +237,11 @@
 
 #arena:not(.chess) .player.fullskin2[data-position='0']:not(.minskin)>.avatar,
 #arena:not(.chess) .player.fullskin2[data-position='0']:not(.minskin)>.avatar2{
-	width:60px;
+	width:50px;
 	background-position:50%;
 }
 #arena:not(.chess) .player.fullskin2[data-position='0']:not(.minskin)>.avatar2{
-	left:60px;
+	left:50px;
     top:0;
 	z-index:1;
 }
