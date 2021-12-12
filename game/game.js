@@ -39601,10 +39601,10 @@
 									page.content.image[name+'.jpg']=fakeme.image;
 								}
 								else{
-									if(!page.content.image[name+'.jpg']){
-										alert('请选择武将头像');
-										return;
-									}
+									// if(!page.content.image[name+'.jpg']){
+									// 	alert('请选择武将头像');
+									// 	return;
+									// }
 								}
 								var hp=page.querySelector('input.new_hp').value;
 								if(hp=='Infinity') hp=Infinity;
