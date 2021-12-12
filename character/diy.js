@@ -28,13 +28,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			key_harukakanata:['female','key',3,['haruka_shuangche']],
 			key_inari:['female','key',2,['inari_baiwei','inari_huhun']],
 			key_shiina:['female','key',3,['shiina_qingshen','shiina_feiyan']],
-			key_sunohara:['unknown','key','3/4',['sunohara_chengshuang','sunohara_tiaoyin','sunohara_jianren']],
+			key_sunohara:['double','key','3/4',['sunohara_chengshuang','sunohara_tiaoyin','sunohara_jianren']],
 			key_rin:['female','key',3,['rin_baoqiu']],
 			key_sasami:['female','key',3,['sasami_miaobian']],
 			key_akane:['female','key',3,['akane_jugu','akane_quanqing','akane_yifu'],['zhu']],
 			key_doruji:['female','key',16,['doruji_feiqu']],
 			key_yuiko:['female','key',3,['yuiko_fenglun','yuiko_dilve']],
-			key_riki:['female','key',3,['riki_spwenji','riki_nvzhuang','riki_mengzhong']],
+			key_riki:['double','key',3,['riki_spwenji','riki_nvzhuang','riki_mengzhong']],
 			key_hisako:['female','key',3,['hisako_yinbao','hisako_zhuanyun']],
 			key_hinata:['male','key',4,['hinata_qiulve','hinata_ehou']],
 			key_noda:['male','key',4,['noda_fengcheng','noda_xunxin']],
@@ -165,7 +165,6 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			old_jiakui:['male','wei',4,['tongqu','xinwanlan']],
 			ol_guohuai:['male','wei',3,['rejingce']],
 			junk_zhangrang:['male','qun',3,['junktaoluan']],
-			junk_simayi:['male','jin',3,['buchen','smyyingshi','xiongzhi','xinquanbian'],['hiddenSkill']],
 		},
 		characterFilter:{
 			key_jojiro:function(mode){
@@ -198,7 +197,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				diy_default:["diy_feishi","diy_liuyan","diy_yuji","diy_caiwenji","diy_lukang","diy_zhenji","diy_liufu","diy_xizhenxihong","diy_liuzan","diy_zaozhirenjun","diy_yangyi","diy_tianyu"],
 				diy_noname:['noname'],
 				diy_key:["key_lucia","key_kyousuke","key_yuri","key_haruko","key_umi","key_rei","key_komari","key_yukine","key_yusa","key_misa","key_masato","key_iwasawa","key_kengo","key_yoshino","key_yui","key_tsumugi","key_saya","key_harukakanata","key_inari","key_shiina","key_sunohara","key_rin","key_sasami","key_akane","key_doruji","key_yuiko","key_riki","key_hisako","key_hinata","key_noda","key_tomoya","key_nagisa","key_ayato","key_ao","key_yuzuru","sp_key_kanade","key_mio","key_midori","key_kyoko","key_shizuru","key_shiorimiyuki","key_miki","key_shiori","key_kaori","sp_key_yuri","key_akiko","key_abyusa","key_godan","key_yuu","key_ryoichi","key_kotori","key_jojiro","key_shiroha","key_shizuku","key_hiroto","key_sakuya","key_youta","key_rumi","key_chihaya","key_yukito","key_asara","key_kotomi","key_mia","key_kano"],
-				diy_trashbin:['old_jiakui','ol_guohuai','junk_zhangrang','junk_simayi'],
+				diy_trashbin:['old_jiakui','ol_guohuai','junk_zhangrang'],
 			},
 		},
 		characterIntro:{
@@ -629,11 +628,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			mia_qianmeng:{
 				trigger:{
-					global:'gameDrawAfter',
+					global:'phaseBefore',
 					player:'enterGame',
 				},
 				forced:true,
 				dutySkill:true,
+				filter:function(event,player){
+					return (event.name!='phase'||game.phaseNumber==0);
+				},
 				content:function(){
 					'step 0'
 					player.draw();
@@ -903,9 +905,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							var type=get.type(i);
 							if((type=='basic'||type=='trick')) list.push([type,'',i]);
 							if(i=='sha'){
-								list.push([type,'',i,'fire']);
-								list.push([type,'',i,'thunder']);
-								list.push([type,'',i,'ice']);
+								for(var j of lib.inpile_nature) list.push([type,'',i,j]);
 							}
 						}
 						if(list.length){
@@ -1646,7 +1646,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					event.cards2=result.cards;
 					'step 2'
 					target.$give(event.cards2,player,false);
-					target.loseToSpecial(event.cards2,'asara_yingwei',player);
+					target.loseToSpecial(event.cards2,'asara_yingwei',player).visible=true;
 					var card1=cards[0],card2=event.cards2[0];
 					if(card1.suit==card2.suit) player.draw(2);
 					if(card1.number==card2.number) player.recover();
@@ -2391,9 +2391,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							if(event.filterCard({name:name,isCard:true},player,event)){
 								list.push([type,'',name]);
 								if(name=='sha'){
-									list.push([type,'',name,'fire']);
-									list.push([type,'',name,'thunder']);
-									list.push([type,'',name,'ice']);
+									for(var j of lib.inpile_nature) list.push([type,'',i,j]);
 								}
 							}
 						}
@@ -2991,11 +2989,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			shiroha_yuzhao:{
 				trigger:{
-					global:'gameDrawAfter',
+					global:'phaseBefore',
 					player:'enterGame',
 				},
 				forced:true,
 				charlotte:true,
+				filter:function(event,player){
+					return (event.name!='phase'||game.phaseNumber==0);
+				},
 				content:function(){
 					player.markAuto('shiroha_yuzhao',game.cardsGotoSpecial(get.cards(game.countGroup())).cards);
 				},
@@ -3040,77 +3041,30 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					'step 0'
 					event.num=game.countGroup();
 					player.markAuto('shiroha_yuzhao',game.cardsGotoSpecial(get.cards(event.num)).cards);
-					if(window.decadeUI&&!_status.connectMode) event.goto(3);
 					'step 1'
-					player.chooseButton(['将'+get.cnNumber(num)+'张牌置于牌堆顶（先选择的在上）',player.getStorage('shiroha_yuzhao')],true,num).set('ai',function(button){
-						var player=_status.event.player;
-						var next=_status.event.getTrigger().player;
-						var att=get.attitude(player,next);
-						var card=button.link;
-						var judge=next.getCards('j')[ui.selected.buttons.length];
-						if(judge){
-							return get.judge(judge)(card)*att;
-						}
-						return get.value(card)*att;
+					var next=player.chooseToMove(),num=game.countGroup();
+					next.set('prompt','预兆：将'+get.cnNumber(num)+'张牌置于牌堆顶');
+					next.set('num',num);
+					next.set('forced',true);
+					next.set('filterOk',function(moved){
+						return moved[1].length==_status.event.num;
+					});
+					next.set('filterMove',function(from,to,moved){
+						if(to!=1) return true;
+						return moved[1].length<_status.event.num;
+					});
+					next.set('list',[
+						[get.translation(player)+'（你）的“兆”',player.storage.shiroha_yuzhao],
+						['牌堆顶'],
+					]);
+					next.set('processAI',function(list){
+						var cards=list[0][1],cards2=cards.randomRemove(_status.event.num);
+						return [cards,cards2];
 					});
 					'step 2'
-					player.unmarkAuto('shiroha_yuzhao',result.links);
-					while(result.links.length){
-						ui.cardPile.insertBefore(result.links.pop().fix(),ui.cardPile.firstChild);
-					}
-					game.updateRoundNumber();
-					event.finish();
-					'step 3'
-					'短鸽自己八成不会写，我先写好算了';
-					var cards=player.getStorage('shiroha_yuzhao');
-					var yuzhao=decadeUI.content.chooseGuanXing(player,cards,cards.length,null,num);
-					yuzhao.caption='【预兆】';
-					yuzhao.header1='预兆';
-					yuzhao.header2='牌堆顶';
-					yuzhao.tip='将'+num+'张牌置于牌堆顶<br>'+yuzhao.tip;
-					yuzhao.callback=function(){
-						return this.cards[1].length==num; 
-					};
-					event.switchToAuto=function(){
-						var cheats=[];
-						var cards=yuzhao.cards[0].slice(0);
-						var stopped=false;
-					
-						var next=trigger.player;
-						var hasFriend=get.attitude(player,next)>0;
-					
-						var judges=next.node.judges.childNodes;
-						if(judges.length>0) cheats=decadeUI.get.cheatJudgeCards(cards,judges,hasFriend);
-						if(hasFriend){
-							cards=cards.sort(function(b,a){
-								return get.value(b,next)-get.value(a,next);
-							});
-						}
-						else{
-							cards.sort(function(a,b){
-								return get.value(b,next)-get.value(a,next);
-							});
-						}
-						cards=cheats.concat(cards);
-						var time=500;
-						var gainNum=num;
-						for(var i=cards.length-1;i>=0;i--){
-							setTimeout(function(card,index,finished,moveDown){
-								yuzhao.move(card,index,moveDown?1:0);
-								if(finished) yuzhao.finishTime(1000);
-							},time,cards[i],i,i==0,gainNum>0);
-							time += 500;
-							gainNum--;
-						}
-					};
-					if(!event.isMine()){
-						event.switchToAuto();
-					}
-					'step 4'
-					var cards=event.cards2;
-					if(event.result&&event.result.bool){
+					if(result&&result.bool){
+						var cards=result.moved[1];
 						player.unmarkAuto('shiroha_yuzhao',cards);
-						var first=ui.cardPile.firstChild;
 						while(cards.length){
 							ui.cardPile.insertBefore(cards.pop().fix(),ui.cardPile.firstChild);
 						}
@@ -3336,11 +3290,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			kotori_yumo:{
 				trigger:{
-					global:'gameDrawAfter',
+					global:'phaseBefore',
 					player:'enterGame',
 				},
 				forced:true,
 				charlotte:true,
+				filter:function(event,player){
+					return (event.name!='phase'||game.phaseNumber==0);
+				},
 				content:function(){
 					var list=['wei','shu','wu','qun','jin'];
 					for(var i of list){
@@ -3655,7 +3612,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					global:['gainAfter','equipAfter','addJudgeAfter','loseAsyncAfter'],
 				},
 				filterTarget:function(card,player,target){
-					return target!=player&&(target.sex=='female'||target.sex=='male'&&target.countCards('hej')>0);
+					return target!=player&&(target.hasSex('female')||target.countCards('hej')>0);
 				},
 				filter:function(event,player){
 					var evt=event.getl(player);
@@ -3682,7 +3639,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					if(result.bool&&result.targets&&result.targets.length){
 						var target=result.targets[0];
 						player.line(target,'green');
-						if(target.sex=='female') target.loseHp();
+						if(target.hasSex('female')) target.loseHp();
 						else player.discardPlayerCard(target,2,'hej',true);
 					}
 					else event.finish();
@@ -3925,10 +3882,10 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				},
 			},
 			akiko_dongcha:{
-				trigger:{global:'gameDrawAfter'},
+				trigger:{global:'phaseBefore'},
 				forced:true,
 				filter:function(event,player){
-					return get.mode()=='identity';
+					return get.mode()=='identity'&&game.phaseNumber==0;
 				},
 				content:function(){
 					var func=function(){
@@ -3991,9 +3948,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						var type=get.type(i);
 						if(type=='basic'||type=='trick') list.push([type,'',i]);
 						if(i=='sha'){
-							list.push([type,'',i,'fire']);
-							list.push([type,'',i,'thunder']);
-							list.push([type,'',i,'ice']);
+							for(var j of lib.inpile_nature) list.push([type,'',i,j]);
 						}
 					}
 					player.chooseButton(['是否视为使用一张基本牌或普通锦囊牌？',[list,'vcard']]).set('filterButton',function(button){
@@ -4085,10 +4040,13 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			miki_shenqiang:{
 				trigger:{
-					global:'gameDrawAfter',
+					global:'phaseBefore',
 					player:'enterGame',
 				},
 				forced:true,
+				filter:function(event,player){
+					return (event.name!='phase'||game.phaseNumber==0);
+				},
 				content:function(){
 					player.equip(game.createCard2('miki_hydrogladiator','club',6));
 					player.equip(game.createCard2('miki_binoculars','diamond',6));
@@ -4516,11 +4474,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			kamome_yangfan:{
 				trigger:{
 					player:['loseAfter','enterGame'],
-					global:['equipAfter','addJudgeAfter','gameDrawAfter','gainAfter','loseAsyncAfter'],
+					global:['equipAfter','addJudgeAfter','phaseBefore','gainAfter','loseAsyncAfter'],
 				},
 				forced:true,
 				filter:function(event,player){
-					if(typeof event.getl!='function') return true;
+					if(typeof event.getl!='function') return (event.name!='phase'||game.phaseNumber==0);
 					var evt=event.getl(player);
 					return evt&&evt.player==player&&evt.es&&evt.es.length;
 				},
@@ -5410,7 +5368,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				trigger:{global:'damageBegin1'},
 				forced:true,
 				filter:function(event,player){
-					return event.source&&event.source.sex=='male'&&event.player.sex=='male';
+					return event.source&&event.source.sameSexAs(event.player)
 				},
 				content:function(){
 					player.draw();
@@ -6551,8 +6509,11 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						return num+player.maxHp;
 					}
 				},
-				trigger:{global:'gameDrawAfter',player:'enterGame'},
+				trigger:{global:'phaseBefore',player:'enterGame'},
 				forced:true,
+				filter:function(event,player){
+					return (event.name!='phase'||game.phaseNumber==0);
+				},
 				content:function(){
 					player.draw(player.maxHp);
 				}
@@ -6803,11 +6764,14 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			},
 			sunohara_chengshuang:{
 				trigger:{
-					global:'gameDrawAfter',
+					global:'phaseBefore',
 					player:'enterGame',
 				},
 				group:'sunohara_chengshuang_phase',
 				forced:true,
+				filter:function(event,player){
+					return (event.name!='phase'||game.phaseNumber==0);
+				},
 				content:function(){
 					'step 0'
 					var evt=event.getParent('phase');
@@ -6819,12 +6783,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						player.sex=sex;
 						if(player.marks&&player.marks.sunohara_chengshuang) player.marks.sunohara_chengshuang.firstChild.innerHTML=sex=='male'?'♂':'♀';
 					},player,sex);
-					game.log(player,'将性别变更为','#g'+get.translation(sex));
+					game.log(player,'将性别变更为','#g'+get.translation(sex)+'性');
 				},
 				mark:true,
 				intro:{
 					content:function(storage,player){
-						if(player.sex=='unknown') return '当前性别未确定';
+						if(player.sex=='unknown'||player.sex=='double') return '当前性别未确定';
 						return '当前性别：'+get.translation(player.sex);
 					},
 				},
@@ -6838,12 +6802,12 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					return game.phaseNumber>1;
 				},
 				prompt2:function(event,player){
-					if(player.sex=='unknown') return '选择自己的性别';
+					if(player.sex=='unknown'||player.sex=='double') return '选择自己的性别';
 					return '将自己的性别变更为'+(player.sex=='male'?'女性':'男性');
 				},
 				content:function(){
 					'step 0'
-					if(player.sex=='unknown') player.chooseControl('male','female').set('prompt','成双：请选择自己的性别');
+					if(player.sex=='unknown'||player.sex=='double') player.chooseControl('male','female').set('prompt','成双：请选择自己的性别');
 					else event._result={control:player.sex=='male'?'female':'male'};
 					'step 1'
 					var sex=result.control;
@@ -6851,7 +6815,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 						player.sex=sex;
 						if(player.marks&&player.marks.sunohara_chengshuang) player.marks.sunohara_chengshuang.firstChild.innerHTML=sex=='male'?'♂':'♀';
 					},player,sex);
-					game.log(player,'将性别变更为','#g'+get.translation(sex));
+					game.log(player,'将性别变更为','#g'+get.translation(sex)+'性');
 				},
 			},
 			sunohara_tiaoyin:{
@@ -6880,7 +6844,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				contentAfter:function(){
 					var bool=false;
 					for(var i=0;i<targets.length;i++){
-						if(targets[i].sex!=player.sex){
+						if(targets[i].differentSexFrom(player)){
 							bool=true;break;
 						};
 					}
@@ -6893,9 +6857,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							return lib.card.shunshou.ai.result.target.apply(this,arguments);
 						},
 						player:function(player,target){
-							if(target.sex==player.sex) return 0;
+							if(target.sameSexAs(player)) return 0;
 							for(var i=0;i<ui.selected.targets.length;i++){
-								if(ui.selected.targets[i].sex!=player.sex) return 0;
+								if(ui.selected.targets[i].differentSexFrom(player)) return 0;
 							}
 							return (get.attitude(player,target)<0&&target.countCards('h','tao')>0)?1:-2;
 						},
@@ -6907,7 +6871,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 				direct:true,
 				content:function(){
 					'step 0'
-					event.num=(!trigger.source||trigger.source.isDead()||trigger.source.sex!=player.sex)?3:1;
+					event.num=(!trigger.source||trigger.source.isDead()||trigger.source.differentSexFrom(player))?3:1;
 					player.chooseTarget(get.prompt('sunohara_jianren'),'令一名角色摸'+get.cnNumber(event.num)+'张牌。').set('ai',function(target){
 						var att=get.attitude(player,target);
 						if(att<=0) return 0;
@@ -7059,12 +7023,8 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							var name=lib.inpile[i];
 							if(name=='du'||name=='shan') continue;
 							if(name=='sha'){
-								list.addArray([
-									['基本','','sha'],
-									['基本','','sha','fire'],
-									['基本','','sha','thunder'],
-									['基本','','sha','ice'],
-								]);
+								list.push(['基本','','sha']);
+								for(var j of lib.inpile_nature) list.push(['基本','',name,j]);
 							}
 							else if(get.type(name)=='basic'){
 								list.push(['基本','',name]);
@@ -7325,9 +7285,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							if(name=='boss_mengpohuihun') continue;
 							if(name=='sha'){
 								list.push(['基本','','sha']);
-								list.push(['基本','','sha','fire']);
-								list.push(['基本','','sha','thunder']);
-								list.push(['基本','','sha','ice']);
+								for(var j of lib.inpile_nature) list.push(['基本','',name,j]);
 							}
 							else if(get.type(name)=='trick') list.push(['锦囊','',name]);
 							else if(get.type(name)=='basic') list.push(['基本','',name]);
@@ -9918,9 +9876,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 							if(player.storage.junktaoluan.contains(name)) continue;
 							if(name=='sha'){
 								list.push(['基本','','sha']);
-								list.push(['基本','','sha','fire']);
-								list.push(['基本','','sha','thunder']);
-								list.push(['基本','','sha','ice']);
+								for(var j of lib.inpile_nature) list.push(['基本','',name,j]);
 							}
 							else if(get.type(name)=='trick') list.push(['锦囊','',name]);
 							else if(get.type(name)=='basic') list.push(['基本','',name]);
@@ -14491,7 +14447,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 					return true;
 				},
 				filterTarget:function(card,player,target){
-					return target.sex=='male'&&player!=target;
+					return target.hasSex('male')&&player!=target;
 				},
 				content:function(){
 					"step 0"
@@ -15323,7 +15279,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			riki_spwenji:'问计',
 			riki_spwenji_info:'出牌阶段开始时，你可以令一名其他角色交给你一张牌。你于本回合内使用与该牌名称相同的牌时不能被其他角色响应。',
 			riki_nvzhuang:'女装',
-			riki_nvzhuang_info:'锁定技，此武将牌的性别视为女性。结束阶段，若你：有手牌，你摸一张牌；没有手牌，你摸两张牌。',
+			riki_nvzhuang_info:'锁定技，此武将牌视为包含女性性别。结束阶段，若你：有手牌，你摸一张牌；没有手牌，你摸两张牌。',
 			riki_mengzhong:'梦终',
 			riki_mengzhong_info:'觉醒技，准备阶段，若你已因〖问计〗获得了三张或更多的牌，则你加1点体力上限并回复1点体力，失去〖问计〗并获得〖重振〗。',
 			riki_chongzhen:'重振',
@@ -15383,7 +15339,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			kanade_benzhan:'奔战',
 			kanade_benzhan_info:'当你使用或打出牌响应其他角色，或其他角色使用或打出牌响应你后，若此牌为：基本牌，你可令一名角色弃置两张牌或令一名角色摸两张牌；非基本牌，你可对一名角色造成1点伤害或令一名其他角色回复1点体力。',
 			mio_tuifu:'推腐',
-			mio_tuifu_info:'锁定技，当一名男性角色对一名男性角色造成伤害时，你摸一张牌。',
+			mio_tuifu_info:'锁定技，当一名角色对一名同性角色造成伤害时，你摸一张牌。',
 			mio_tishen:'替身',
 			mio_tishen_info:'限定技，准备阶段，你可以将体力值回复至体力上限并摸等同于回复量的牌，然后将武将牌替换为【西园美鸟】。',
 			midori_nonghuan:'弄幻',
@@ -15443,7 +15399,7 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			yuu_lveduo_info:'每轮限一次，其他角色的回合开始时，若你本局游戏内未对其发动过〖掠夺〗且你的武将牌正面朝上，你可以将武将牌翻面并获得该角色本回合内的控制权。此回合结束时，你将武将牌翻回正面。锁定技，若你的武将牌背面朝上，则你不能使用或打出牌。',
 			yuu_lveduo_full_info:'每轮限一次，其他角色的回合开始时，若你本局游戏内未对其发动过〖掠夺〗且你的武将牌正面朝上，你可以将武将牌翻面并获得该角色本回合内的控制权。此回合结束时，你将武将牌翻回正面，获得该角色武将牌上所有的带有「Charlotte」标签的技能，且该角色失去这些技能。锁定技，若你的武将牌背面朝上，则你不能使用或打出牌。',
 			ryoichi_baoyi:'爆衣',
-			ryoichi_baoyi_info:'锁定技，当你失去装备区内的一张牌后，你摸一张牌，然后选择一项：①弃置一名其他男性角色区域内的两张牌。②令一名其他女性角色失去1点体力。',
+			ryoichi_baoyi_info:'锁定技，当你失去装备区内的一张牌后，你摸一张牌，然后选择一项：①令一名其他女性角色失去1点体力。②弃置一名其他非女性角色区域内的两张牌。',
 			ryoichi_tuipi:'褪皮',
 			ryoichi_tuipi_info:'锁定技，你不是【顺手牵羊】和【过河拆桥】的合法目标。你装备区的牌于弃牌阶段内计入手牌上限。',
 			kotori_yumo:'驭魔',
@@ -15928,11 +15884,9 @@ game.import('character',function(lib,game,ui,get,ai,_status){
 			ns_caimao:'蔡瑁',
 			nsdingzhou:'定州',
 			nsdingzhou_info:'出牌阶段限一次，你可以选择一名区域内有牌的其他角色。你随机获得其区域内的一张牌，然后摸一张牌。若你以此法获得了两张颜色不同的牌，则你失去1点体力。',
-			junk_simayi:'止息司马懿',
 			ol_guohuai_ab:'郭淮',
 			junk_zhangrang_ab:'张让',
 			old_jiakui_ab:'贾逵',
-			junk_simayi_ab:'司马懿',
 			diy_tieba:'吧友设计',
 			diy_default:'常规',
 			diy_noname:'无名专属',
